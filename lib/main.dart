@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiretrace/HomeScreen.dart';
-import 'package:tiretrace/HotpotScreen.dart';
+import 'package:tiretrace/HotSpotScreen.dart';
 import 'package:tiretrace/SearchScreen.dart';
 import 'package:tiretrace/ImpactScreen.dart';
 import 'package:tiretrace/LoadingScreen.dart';
@@ -8,8 +8,11 @@ import 'package:tiretrace/MapScreen.dart';
 import 'package:tiretrace/PetitionScreen.dart';
 import 'package:tiretrace/TireGuide.dart';
 import 'package:tiretrace/fakeData.dart';
+import 'package:tiretrace/geojson_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await GeoJsonService().initialize();
   runApp(const TireTraceApp());
 }
 

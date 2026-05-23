@@ -1,17 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:tiretrace/fakeData.dart';
-
-// ── Shared colour tokens ────────────────────────────────────────────────────
-// bg:        0xFF0A1628   (deep navy)
-// surface:   0xFF0F1E30   (card bg)
-// surface2:  0xFF111E2E   (alt card)
-// border:    0xFF1A2D45
-// accent:    0xFF2B7FE0   (ocean blue)
-// accentLt:  0xFF5BA3F5   (light blue)
-// textPri:   0xFFE8F0F8
-// textMuted: 0xFF4A7A9B
-// ───────────────────────────────────────────────────────────────────────────
+import 'package:tiretrace/theme/app_colors.dart';
 
 class LoadingScreen extends StatefulWidget {
   final Location location;
@@ -82,7 +72,7 @@ class _LoadingScreenState extends State<LoadingScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: appBg,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
@@ -106,7 +96,7 @@ class _LoadingScreenState extends State<LoadingScreen>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: const Color(0xFF2B7FE0).withOpacity(
+                                color: appBlue.withOpacity(
                                     0.08 + _pulseController.value * 0.12),
                                 width: 1.5),
                           ),
@@ -123,7 +113,7 @@ class _LoadingScreenState extends State<LoadingScreen>
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: const Color(0xFF5BA3F5).withOpacity(
+                                color: appBlue.withOpacity(
                                     0.12 + _pulseController.value * 0.18),
                                 width: 1),
                           ),
@@ -146,9 +136,9 @@ class _LoadingScreenState extends State<LoadingScreen>
                         child: CircularProgressIndicator(
                           value: _progressController.value,
                           strokeWidth: 3,
-                          backgroundColor: const Color(0xFF1A2D45),
+                          backgroundColor: appBorder,
                           valueColor: const AlwaysStoppedAnimation<Color>(
-                              Color(0xFF2B7FE0)),
+                              appBlue),
                         ),
                       ),
                     ),
@@ -159,20 +149,20 @@ class _LoadingScreenState extends State<LoadingScreen>
                         height: 72,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF0F2040),
+                          color: appBlueLight,
                           border: Border.all(
-                              color: const Color(0xFF2B7FE0).withOpacity(0.7),
+                              color: appBlue.withOpacity(0.7),
                               width: 1),
                           boxShadow: [
                             BoxShadow(
-                                color: const Color(0xFF2B7FE0).withOpacity(
+                                color: appBlue.withOpacity(
                                     0.2 + _pulseController.value * 0.35),
                                 blurRadius: 20,
                                 spreadRadius: 2)
                           ],
                         ),
                         child: const Icon(Icons.track_changes,
-                            color: Color(0xFF5BA3F5), size: 30),
+                            color: appBlue, size: 30),
                       ),
                     ),
                   ],
@@ -183,13 +173,13 @@ class _LoadingScreenState extends State<LoadingScreen>
                   style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFFE8F0F8),
+                      color: appTextPrimary,
                       letterSpacing: 0.5)),
               const SizedBox(height: 6),
               Text('Routing to ${widget.location.name}',
                   style: const TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF4A7A9B),
+                      color: appTextSecondary,
                       letterSpacing: 0.3)),
               const SizedBox(height: 40),
               AnimatedBuilder(
@@ -202,16 +192,16 @@ class _LoadingScreenState extends State<LoadingScreen>
                       child: LinearProgressIndicator(
                         value: _progressController.value,
                         minHeight: 3,
-                        backgroundColor: const Color(0xFF1A2D45),
+                        backgroundColor: appBorder,
                         valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFF5BA3F5)),
+                            appBlue),
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text('${(_progressController.value * 100).toInt()}%',
                         style: const TextStyle(
                             fontSize: 11,
-                            color: Color(0xFF4A7A9B),
+                            color: appTextSecondary,
                             fontFeatures: [FontFeature.tabularFigures()])),
                   ],
                 ),
@@ -222,7 +212,7 @@ class _LoadingScreenState extends State<LoadingScreen>
                 child: Text(_messages[_messageIndex],
                     style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF5BA3F5),
+                        color: appBlue,
                         fontWeight: FontWeight.w400,
                         letterSpacing: 0.2),
                     textAlign: TextAlign.center),
@@ -239,8 +229,8 @@ class _LoadingScreenState extends State<LoadingScreen>
                           height: 6,
                           decoration: BoxDecoration(
                             color: i == _messageIndex
-                                ? const Color(0xFF2B7FE0)
-                                : const Color(0xFF1A2D45),
+                                ? appBlue
+                                : appBorder,
                             borderRadius: BorderRadius.circular(3),
                           ),
                         )),
@@ -264,7 +254,7 @@ class _ArcPainter extends CustomPainter {
         math.pi * 0.7,
         false,
         Paint()
-          ..color = const Color(0xFF5BA3F5).withOpacity(0.5)
+          ..color = appBlue.withOpacity(0.5)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2
           ..strokeCap = StrokeCap.round);
@@ -274,7 +264,7 @@ class _ArcPainter extends CustomPainter {
         math.pi * 0.5,
         false,
         Paint()
-          ..color = const Color(0xFF2B7FE0).withOpacity(0.35)
+          ..color = appBlue.withOpacity(0.35)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2
           ..strokeCap = StrokeCap.round);

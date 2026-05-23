@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tiretrace/theme/app_colors.dart';
 
 class PetitionScreen extends StatefulWidget {
   const PetitionScreen({super.key});
@@ -25,13 +26,13 @@ class _PetitionScreenState extends State<PetitionScreen> {
 
     return '''To: Local City Council & Environmental Affairs Office
 
-Subject: Action Needed — Tire Microplastic Runoff Entering $waterway in $city
+Subject: Tire Microplastic Runoff Entering $waterway in $city
 
 Dear Council Members,
 
 I am writing to raise urgent concern about tire wear microplastics entering $waterway via stormwater runoff on $road and nearby routes in $city.
 
-Tire wear particles are among the largest sources of microplastic pollution in urban waterways, yet receive far less regulatory attention than other pollutants. These particles carry toxic chemicals including zinc, PAHs, and 6PPD-quinone — a compound linked to mass coho salmon mortality in the Pacific Northwest and documented in waterways across the US.
+Tire wear particles are the largest source of microplastic pollution in urban waterways, yet receive far less regulatory attention than other pollutants. These particles carry toxic chemicals including zinc, PAHs, and especially 6PPD-quinone, a compound linked to mass coho salmon mortality in the Pacific Northwest and documented in waterways across the US.
 
 I respectfully request the council:
 1. Commission a stormwater runoff audit for roads draining into $waterway
@@ -67,23 +68,23 @@ A concerned resident of $city''';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: appBg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A1628),
+        backgroundColor: appBg,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
-              size: 16, color: Color(0xFF4A7A9B)),
+              size: 16, color: appTextSecondary),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text('Petition generator',
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFFE8F0F8))),
+                color: appTextPrimary)),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(height: 0.5, color: const Color(0xFF1A2D45)),
+          child: Container(height: 0.5, color: appBorder),
         ),
       ),
       body: SingleChildScrollView(
@@ -96,14 +97,14 @@ A concerned resident of $city''';
               padding: const EdgeInsets.all(14),
               margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1E30),
+                color: appSurface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+                border: Border.all(color: appBorder, width: 1),
               ),
-              child: const Text(
+              child: Text(
                 'Fill in the details below to generate a letter addressed to your local officials about tire microplastic runoff in your area.',
                 style: TextStyle(
-                    fontSize: 12, color: Color(0xFF4A7A9B), height: 1.6),
+                    fontSize: 12, color: appTextSecondary, height: 1.6),
               ),
             ),
 
@@ -136,12 +137,12 @@ A concerned resident of $city''';
               width: double.infinity,
               child: FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F2040),
-                  foregroundColor: const Color(0xFF5BA3F5),
+                  backgroundColor: appBlueLight,
+                  foregroundColor: appBlue,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: Color(0xFF2B7FE0), width: 1),
+                    side: BorderSide(color: appBlue.withOpacity(0.3), width: 1),
                   ),
                 ),
                 onPressed: _generate,
@@ -159,36 +160,32 @@ A concerned resident of $city''';
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F1E30),
+                  color: appSurface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+                  border: Border.all(color: appBorder, width: 1),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _petitionText,
-                      style: const TextStyle(
-                          fontSize: 12, color: Color(0xFF8AAFCF), height: 1.8),
+                      style: TextStyle(
+                          fontSize: 12, color: appTextSecondary, height: 1.8),
                     ),
                     const SizedBox(height: 14),
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
                         style: FilledButton.styleFrom(
-                          backgroundColor: _copied
-                              ? const Color(0xFF0F2A10)
-                              : const Color(0xFF0A1628),
-                          foregroundColor: _copied
-                              ? const Color(0xFF5BC47A)
-                              : const Color(0xFF5BA3F5),
+                          backgroundColor: _copied ? appGreenLight : appBg,
+                          foregroundColor: _copied ? appGreen : appBlue,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(
                                 color: _copied
-                                    ? const Color(0xFF1A5C2A)
-                                    : const Color(0xFF1A2D45),
+                                    ? appGreen.withOpacity(0.3)
+                                    : appBorder,
                                 width: 1),
                           ),
                         ),
@@ -218,7 +215,7 @@ class _FieldLabel extends StatelessWidget {
     return Text(text.toUpperCase(),
         style: const TextStyle(
             fontSize: 11,
-            color: Color(0xFF4A7A9B),
+            color: appTextSecondary,
             letterSpacing: 0.8,
             fontWeight: FontWeight.w500));
   }
@@ -239,18 +236,18 @@ class _Field extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1E30),
+        color: appSurface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+        border: Border.all(color: appBorder, width: 1),
       ),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
-        style: const TextStyle(fontSize: 14, color: Color(0xFFE8F0F8)),
-        cursorColor: const Color(0xFF5BA3F5),
+        style: const TextStyle(fontSize: 14, color: appTextPrimary),
+        cursorColor: appBlue,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF4A7A9B), fontSize: 13),
+          hintStyle: const TextStyle(color: appTextSecondary, fontSize: 13),
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 12),

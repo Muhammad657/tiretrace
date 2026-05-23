@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tiretrace/fakeData.dart';
+import 'package:tiretrace/theme/app_colors.dart';
 
 class ImpactScreen extends StatefulWidget {
   final Location location;
+
   const ImpactScreen({super.key, required this.location});
+
   @override
   State<ImpactScreen> createState() => _ImpactScreenState();
 }
@@ -13,25 +16,20 @@ class _ImpactScreenState extends State<ImpactScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _scoreController;
   late Animation<double> _scoreAnimation;
-  bool _showPetition = false;
+
+  bool _showPetition = true;
   bool _petitionCopied = false;
 
   Color get scoreColor {
-    if (widget.location.pollutionScore >= 75) return const Color(0xFFE24B4A);
-    if (widget.location.pollutionScore >= 50) return const Color(0xFFEF9F27);
-    return const Color(0xFF5BA3F5);
+    if (widget.location.pollutionScore >= 75) return appCritical;
+    if (widget.location.pollutionScore >= 50) return appHigh;
+    return appBlue;
   }
 
-  Color get scoreColorDim {
-    if (widget.location.pollutionScore >= 75) return const Color(0xFF2A0F0F);
-    if (widget.location.pollutionScore >= 50) return const Color(0xFF2A1A05);
-    return const Color(0xFF0F1E30);
-  }
-
-  Color get scoreBorder {
-    if (widget.location.pollutionScore >= 75) return const Color(0xFF6B1F1F);
-    if (widget.location.pollutionScore >= 50) return const Color(0xFF6B3D05);
-    return const Color(0xFF1A2D45);
+  Color get scoreBg {
+    if (widget.location.pollutionScore >= 75) return appCriticalBg;
+    if (widget.location.pollutionScore >= 50) return appHighBg;
+    return appBlueLight;
   }
 
   String get scoreLabel {
@@ -51,15 +49,13 @@ I am writing to raise urgent concern about tire wear microplastics entering ${wi
 
 Routes in this area currently score ${widget.location.pollutionScore}/100 on the TireTrace pollution index — shedding an estimated ${widget.location.particlesMg} of tire particles per trip. ${widget.location.waterwaySentence}
 
-Tire wear particles are among the largest sources of microplastic pollution in urban waterways, yet they receive far less regulatory attention than other pollutants. These particles carry toxic chemicals including zinc, PAHs, and 6PPD-quinone — a compound linked to mass coho salmon mortality in the Pacific Northwest.
+Tire wear particles are among the largest sources of microplastic pollution in urban waterways.
 
 I respectfully request the council:
-1. Commission a stormwater runoff audit for roads draining into ${widget.location.waterway}
-2. Install bioretention filters or vegetated swales at high-risk drain outfalls
-3. Consider lower-shedding road surfaces on the highest-impact corridors
-4. Support regional policy requiring tire particle impact assessments for new road projects
-
-Our waterways depend on action now, not after the damage is done.
+1. Commission a stormwater runoff audit
+2. Install bioretention filters
+3. Consider lower-shedding road surfaces
+4. Support regional tire-particle policy
 
 Sincerely,
 A concerned resident''';
@@ -67,10 +63,17 @@ A concerned resident''';
   @override
   void initState() {
     super.initState();
+
     _scoreController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200));
-    _scoreAnimation =
-        CurvedAnimation(parent: _scoreController, curve: Curves.easeOutCubic);
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _scoreAnimation = CurvedAnimation(
+      parent: _scoreController,
+      curve: Curves.easeOutCubic,
+    );
+
     _scoreController.forward();
   }
 
@@ -82,89 +85,126 @@ A concerned resident''';
 
   void _copyPetition() async {
     await Clipboard.setData(ClipboardData(text: _petitionText));
+
     setState(() => _petitionCopied = true);
+
     await Future.delayed(const Duration(seconds: 2));
-    if (mounted) setState(() => _petitionCopied = false);
+
+    if (mounted) {
+      setState(() => _petitionCopied = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: appBg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0A1628),
+        backgroundColor: appBg,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              size: 16, color: Color(0xFF4A7A9B)),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 16,
+            color: appTextSecondary,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Route impact',
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFE8F0F8),
-                letterSpacing: 0.2)),
+        title: const Text(
+          'Route impact',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: appTextPrimary,
+          ),
+        ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 0.5, color: const Color(0xFF1A2D45)),
+          preferredSize: const Size.fromHeight(0.5),
+          child: Container(
+            height: 0.5,
+            color: appBorder,
+          ),
         ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Destination card
+            // ── Destination card ───────────────────────────────
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1E30),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: appBorder),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: 38,
-                    height: 38,
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F2040),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: const Color(0xFF2B7FE0).withOpacity(0.5),
-                          width: 1),
+                      color: appBlueLight,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.location_on_outlined,
-                        color: Color(0xFF5BA3F5), size: 18),
+                    child: const Icon(
+                      Icons.location_on_outlined,
+                      color: appBlue,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.location.name,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.location.name,
                           style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFFE8F0F8))),
-                      const SizedBox(height: 2),
-                      Text(widget.location.subtitle,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: appTextPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          widget.location.subtitle,
                           style: const TextStyle(
-                              fontSize: 12, color: Color(0xFF4A7A9B))),
-                    ],
+                            fontSize: 12,
+                            color: appTextSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // Score ring card
+            // ── Score card ─────────────────────────────────────
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1E30),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: appBorder),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -174,26 +214,27 @@ A concerned resident''';
                       final val = _scoreAnimation.value *
                           widget.location.pollutionScore /
                           100;
+
                       return SizedBox(
-                        width: 80,
-                        height: 80,
+                        width: 82,
+                        height: 82,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
                             CircularProgressIndicator(
                               value: val,
-                              strokeWidth: 5,
-                              backgroundColor: scoreColorDim,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(scoreColor),
+                              strokeWidth: 6,
+                              backgroundColor: scoreBg,
+                              valueColor: AlwaysStoppedAnimation(scoreColor),
                               strokeCap: StrokeCap.round,
                             ),
                             Text(
                               '${(widget.location.pollutionScore * _scoreAnimation.value).toInt()}',
                               style: TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w500,
-                                  color: scoreColor),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: scoreColor,
+                              ),
                             ),
                           ],
                         ),
@@ -205,29 +246,43 @@ A concerned resident''';
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Pollution score',
-                            style: TextStyle(
-                                fontSize: 11, color: Color(0xFF4A7A9B))),
-                        const SizedBox(height: 4),
-                        Text('${widget.location.pollutionScore} particles/km',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                                color: scoreColor)),
-                        const SizedBox(height: 6),
+                        const Text(
+                          'Pollution score',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: appTextTertiary,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          '${widget.location.pollutionScore} particles/km',
+                          style: TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.w700,
+                            color: scoreColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: scoreColorDim,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: scoreBorder, width: 0.5),
+                            horizontal: 9,
+                            vertical: 4,
                           ),
-                          child: Text(scoreLabel,
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: scoreColor,
-                                  fontWeight: FontWeight.w500)),
+                          decoration: BoxDecoration(
+                            color: scoreBg,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: scoreColor.withOpacity(0.2),
+                            ),
+                          ),
+                          child: Text(
+                            scoreLabel,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: scoreColor,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -235,15 +290,18 @@ A concerned resident''';
                 ],
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // Warning card
+            // ── Waterway warning ───────────────────────────────
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A0F0F),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF501313), width: 0.5),
+                color: appCriticalBg,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: appCritical.withOpacity(0.15),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,82 +309,126 @@ A concerned resident''';
                   Row(
                     children: [
                       Container(
-                        width: 18,
-                        height: 18,
+                        width: 22,
+                        height: 22,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE24B4A).withOpacity(0.12),
+                          color: appCritical.withOpacity(0.08),
                           shape: BoxShape.circle,
-                          border: Border.all(
-                              color: const Color(0xFFA32D2D), width: 0.5),
                         ),
-                        child: const Icon(Icons.info_outline,
-                            color: Color(0xFFE24B4A), size: 11),
+                        child: const Icon(
+                          Icons.water_drop_outlined,
+                          size: 12,
+                          color: appCritical,
+                        ),
                       ),
                       const SizedBox(width: 8),
-                      Text('Drains to ${widget.location.waterway}',
+                      Expanded(
+                        child: Text(
+                          'Drains to ${widget.location.waterway}',
                           style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFFE24B4A))),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: appCritical,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(widget.location.waterwaySentence,
-                      style: const TextStyle(
-                          fontSize: 12, color: Color(0xFFF09595), height: 1.6)),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.location.waterwaySentence,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: appTextSecondary,
+                      height: 1.6,
+                    ),
+                  ),
                 ],
               ),
             ),
+
             const SizedBox(height: 12),
 
-            // Stats row
+            // ── Stats ──────────────────────────────────────────
             Row(
               children: [
                 Expanded(
-                    child: _StatBox(
-                        label: 'Tire particles shed',
-                        value: widget.location.particlesMg,
-                        icon: Icons.grain)),
+                  child: _StatBox(
+                    label: 'Tire particles shed',
+                    value: widget.location.particlesMg,
+                    icon: Icons.grain,
+                  ),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: _StatBox(
-                        label: 'At-risk waterway',
-                        value: widget.location.waterway,
-                        icon: Icons.water)),
+                  child: _StatBox(
+                    label: 'At-risk waterway',
+                    value: widget.location.waterway,
+                    icon: Icons.water_outlined,
+                  ),
+                ),
               ],
             ),
+
             const SizedBox(height: 16),
 
-            // ── TIRE RECOMMENDATIONS ──────────────────────────────
-
-            // ── PETITION GENERATOR ────────────────────────────────
-            const SizedBox(height: 10),
+            // ── Petition ───────────────────────────────────────
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF0F1E30),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: appBorder),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header row — tap to expand
-
-                  // Petition text (expandable)
-                  if (_showPetition) ...[
-                    Container(
-                      height: 0.5,
-                      color: const Color(0xFF1A2D45),
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.campaign_outlined,
+                          size: 16,
+                          color: appBlue,
+                        ),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Generated environmental petition',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: appTextPrimary,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _showPetition = !_showPetition;
+                            });
+                          },
+                          child: Icon(
+                            _showPetition
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: appTextSecondary,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  if (_showPetition) ...[
+                    Container(height: 0.5, color: appBorder),
                     Padding(
                       padding: const EdgeInsets.all(14),
                       child: Text(
                         _petitionText,
                         style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF8AAFCF),
-                            height: 1.7,
-                            fontFamily: 'monospace'),
+                          fontSize: 12,
+                          color: appTextSecondary,
+                          height: 1.7,
+                        ),
                       ),
                     ),
                     Padding(
@@ -335,28 +437,30 @@ A concerned resident''';
                         width: double.infinity,
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: _petitionCopied
-                                ? const Color(0xFF0F2A10)
-                                : const Color(0xFF0F2040),
-                            foregroundColor: _petitionCopied
-                                ? const Color(0xFF5BC47A)
-                                : const Color(0xFF5BA3F5),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor:
+                                _petitionCopied ? appGreenLight : appBlueLight,
+                            foregroundColor:
+                                _petitionCopied ? appGreen : appBlue,
+                            padding: const EdgeInsets.symmetric(vertical: 13),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                               side: BorderSide(
-                                  color: _petitionCopied
-                                      ? const Color(0xFF1A5C2A)
-                                      : const Color(0xFF2B7FE0),
-                                  width: 1),
+                                color: _petitionCopied
+                                    ? appGreen.withOpacity(0.2)
+                                    : appBlue.withOpacity(0.2),
+                              ),
                             ),
                           ),
                           onPressed: _copyPetition,
-                          icon: Icon(_petitionCopied ? Icons.check : Icons.copy,
-                              size: 15),
-                          label: Text(_petitionCopied
-                              ? 'Copied to clipboard!'
-                              : 'Copy petition'),
+                          icon: Icon(
+                            _petitionCopied ? Icons.check : Icons.copy_rounded,
+                            size: 15,
+                          ),
+                          label: Text(
+                            _petitionCopied
+                                ? 'Copied to clipboard!'
+                                : 'Copy petition',
+                          ),
                         ),
                       ),
                     ),
@@ -364,161 +468,65 @@ A concerned resident''';
                 ],
               ),
             ),
+
             const SizedBox(height: 28),
 
-            // CTAs
+            // ── CTA buttons ────────────────────────────────────
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F2040),
-                  foregroundColor: const Color(0xFF5BA3F5),
+                  backgroundColor: appBlue,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: const BorderSide(color: Color(0xFF2B7FE0), width: 1),
                   ),
                 ),
-                onPressed: () => Navigator.pushNamed(context, '/loading',
-                    arguments: widget.location),
+                onPressed: () => Navigator.pushNamed(
+                  context,
+                  '/loading',
+                  arguments: widget.location,
+                ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.route, size: 16),
                     SizedBox(width: 8),
-                    Text('Find eco route',
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w500)),
+                    Text(
+                      'Find eco route',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+
+            const SizedBox(height: 10),
+
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF4A7A9B),
-                  side: const BorderSide(color: Color(0xFF1A2D45), width: 1),
+                  foregroundColor: appTextSecondary,
+                  side: const BorderSide(color: appBorder),
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Continue anyway',
-                    style: TextStyle(fontSize: 14)),
+                child: const Text(
+                  'Continue anyway',
+                  style: TextStyle(fontSize: 14),
+                ),
               ),
             ),
-            const SizedBox(height: 8),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  const _SectionHeader({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: const Color(0xFF4A7A9B)),
-        const SizedBox(width: 6),
-        Text(label.toUpperCase(),
-            style: const TextStyle(
-                fontSize: 11,
-                color: Color(0xFF4A7A9B),
-                letterSpacing: 0.8,
-                fontWeight: FontWeight.w500)),
-      ],
-    );
-  }
-}
-
-class _TireCard extends StatelessWidget {
-  final TireRecommendation tire;
-  const _TireCard({required this.tire});
-
-  Color get ratingColor => tire.shedRating == 'Very Low'
-      ? const Color(0xFF5BC47A)
-      : const Color(0xFF5BA3F5);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F1E30),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1A2D45), width: 1),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0A1628),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF1A2D45), width: 1),
-            ),
-            child: const Icon(Icons.tire_repair,
-                color: Color(0xFF4A7A9B), size: 18),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text('${tire.brand} ',
-                        style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFFE8F0F8))),
-                    Text(tire.model,
-                        style: const TextStyle(
-                            fontSize: 13, color: Color(0xFF8AAFCF))),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                Text(tire.reason,
-                    style: const TextStyle(
-                        fontSize: 11, color: Color(0xFF4A7A9B), height: 1.4)),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                decoration: BoxDecoration(
-                  color: ratingColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(
-                      color: ratingColor.withOpacity(0.3), width: 0.5),
-                ),
-                child: Text(tire.shedRating,
-                    style: TextStyle(
-                        fontSize: 10,
-                        color: ratingColor,
-                        fontWeight: FontWeight.w500)),
-              ),
-              const SizedBox(height: 4),
-              Text(tire.priceRange,
-                  style:
-                      const TextStyle(fontSize: 11, color: Color(0xFF4A7A9B))),
-            ],
-          ),
-        ],
       ),
     );
   }
@@ -528,31 +536,55 @@ class _StatBox extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
-  const _StatBox(
-      {required this.label, required this.value, required this.icon});
+
+  const _StatBox({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1E30),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1A2D45), width: 1),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: appBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 14, color: const Color(0xFF2B7FE0)),
-          const SizedBox(height: 8),
-          Text(label,
-              style: const TextStyle(fontSize: 11, color: Color(0xFF4A7A9B))),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: appBlueLight,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: appBlue,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: appTextTertiary,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(value,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFFE8F0F8))),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: appTextPrimary,
+            ),
+          ),
         ],
       ),
     );
